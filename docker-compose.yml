@@ -1,0 +1,43 @@
+version: "3"
+services:
+  mongo:
+    image: mongo:4.4.18
+    ports:
+      - 27018:27017
+    restart: always
+    volumes:
+      - ./data/db:/data/db
+  mongo-express:
+    image: mongo-express
+    depends_on:
+      - mongo
+    ports:
+      - 8081:8081
+    restart: always
+  # backend:
+  #   build: ./back
+  #   command: npm run serve
+  #   depends_on:
+  #    - mongo
+  #   env_file:
+  #     - ./env/dev.env
+  #   links:
+  #     - mongo
+  #   ports:
+  #     - 3000:3000
+  #   volumes:
+  #     - ./back/dist:/usr/src/app/dist
+  #     - ./back/node_modules:/usr/src/app/node_modules
+  #     - ./back/package.json:/usr/src/app/package.json
+  #     - ./back/src:/app/src
+  frontend:
+    build: ./front
+    environment:
+      - CHOKIDAR_USEPOLLING=true
+    ports:
+      - 3001:3000
+    volumes:
+      - ./front/node_modules:/usr/src/app/node_modules
+      - ./front/package.json:/usr/src/app/package.json
+      - ./front/public:/usr/src/app/public
+      - ./front/src:/usr/src/app/src
