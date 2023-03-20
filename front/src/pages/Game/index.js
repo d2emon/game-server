@@ -11,6 +11,9 @@ import React, {
     Container,
     Row,
   } from 'react-bootstrap';
+import { useSelector } from 'react-redux';
+import Authorized from '../../containers/Authorized';
+import { selectUser } from '../../reducers/userSlice';
   import gameAPI from '../../services/gameAPI';
   
   const playerId = 0;
@@ -31,7 +34,9 @@ import React, {
     const [players, setPlayers] = useState([]);
     const [selectedMinion, setSelectedMinion] = useState(null);
     const [hasStarted, setHasStarted] = useState(false);
-  
+
+    const user = useSelector(selectUser);
+    
     const player = useMemo(
       () => (players.length > playerId)
         ? players[playerId]
@@ -130,7 +135,16 @@ import React, {
       },
       [player],
     );
-  
+
+    useEffect(
+      () => {
+        console.log(user);
+      },
+      [
+        user,
+      ],
+    );
+    
     useEffect(() => {
       const game = gameAPI.getGame();
       console.log(game);
@@ -145,6 +159,7 @@ import React, {
     }, []);
   
     return (
+      <Authorized>
       <Container>
         <Row>
           <Col md="3">
@@ -313,6 +328,7 @@ import React, {
           </Col>
         </Row>
       </Container>
+      </Authorized>
     );
   }
   
