@@ -1,331 +1,270 @@
 import React, {
-    useCallback,
-    useEffect,
-    useMemo,
-    useState,
-  } from 'react';
-  import {
-    Button,
-    Card,
-    Col,
-    Container,
-    Row,
-  } from 'react-bootstrap';
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
+import {
+  Button,
+  Card,
+  Col,
+  Container,
+  Row,
+} from 'react-bootstrap';
 import { useSelector } from 'react-redux';
+import PlayerCard from '../../components/PlayerCard';
 import Authorized from '../../containers/Authorized';
 import { selectUser } from '../../reducers/userSlice';
-  import gameAPI from '../../services/gameAPI';
+import gameAPI from '../../services/gameAPI';
   
-  const playerId = 0;
-  const playersData = [
-    {
-      fractions: ['dinos', 'wizards'],
-    },
-    {
-      fractions: ['dinos', 'wizards'],
-    },
-    {
-      fractions: ['dinos', 'wizards'],
-    },
-  ];
+const playerId = 0;
+const playersData = [
+  {
+    fractions: ['dinos', 'wizards'],
+  },
+  {
+    fractions: ['dinos', 'wizards'],
+  },
+  {
+    fractions: ['dinos', 'wizards'],
+  },
+];
   
-  function Game() {
-    const [bases, setBases] = useState([]);
-    const [players, setPlayers] = useState([]);
-    const [selectedMinion, setSelectedMinion] = useState(null);
-    const [hasStarted, setHasStarted] = useState(false);
+function Game() {
+  const [bases, setBases] = useState([]);
+  const [players, setPlayers] = useState([]);
+  const [selectedMinion, setSelectedMinion] = useState(null);
+  const [hasStarted, setHasStarted] = useState(false);
 
-    const user = useSelector(selectUser);
+  const user = useSelector(selectUser);
     
-    const player = useMemo(
-      () => (players.length > playerId)
-        ? players[playerId]
-        : null,
-      [players],
-    );
-    const canPlayAction = useMemo(
-      () => hasStarted && player && (player.canPlayActions > 0),
-      [
-        hasStarted,
-        player,
-      ],
-    );
-    const canPlayMinion = useMemo(
-      () => hasStarted && player && (player.canPlayMinions > 0),
-      [
-        hasStarted,
-        player,
-      ],
-    );
+  const player = useMemo(
+    () => (players.length > playerId)
+      ? players[playerId]
+      : null,
+    [players],
+  );
+  const canPlayAction = useMemo(
+    () => hasStarted && player && (player.canPlayActions > 0),
+    [
+      hasStarted,
+      player,
+    ],
+  );
+  const canPlayMinion = useMemo(
+    () => hasStarted && player && (player.canPlayMinions > 0),
+    [
+      hasStarted,
+      player,
+    ],
+  );
   
-    const handleStartTurn = useCallback(
-      () => {
-        if (!player) {
-          return;
-        }
+  const handleStartTurn = useCallback(
+    () => {
+      console.log('HANSLE START TURN');
+      if (!player) {
+        return;
+      }
   
-        const current = gameAPI.startTurn(playerId);
-        console.log(current);
+      const current = gameAPI.startTurn(playerId);
+      console.log(current);
   
-        setPlayers(current.players);
-        setHasStarted(true);
-      },
-      [player],
-    );
+      setPlayers(current.players);
+      setHasStarted(true);
+    },
+    [player],
+  );
   
-    const handlePlayAction = useCallback(
-      () => {
-        if (!player) {
-          return;
-        }
+  const handlePlayAction = useCallback(
+    () => {
+      console.log('HANSLE PLAY ACTION');
+      if (!player) {
+        return;
+      }
   
-        if (player.actions.length <= 0) {
-          return;
-        }
+      if (player.actions.length <= 0) {
+        return;
+      }
   
-        const card = player.actions[0];
-        console.log(card);
+      const card = player.actions[0];
+      console.log(card);
   
-        const current = gameAPI.playCard(playerId, {
-          card,
-        });
-        console.log(current);
-        setPlayers(current.players);
-      },
-      [player],
-    );
+      const current = gameAPI.playCard(playerId, {
+        card,
+      });
+      console.log(current);
+      setPlayers(current.players);
+    },
+    [player],
+  );
   
-    const handleSelectMinion = useCallback(
-      (data) => () => setSelectedMinion(data),
-      [],
-    )
+  const handleSelectAction = useCallback(
+    () => () => handlePlayAction(),
+    [
+      handlePlayAction,
+    ],
+  );
   
-    const handlePlayMinion = useCallback(
-      (base) => () => {
-        if (!player) {
-          return;
-        }
+  const handleSelectMinion = useCallback(
+    (data) => () => setSelectedMinion(data),
+    [],
+  );
   
-        const current = gameAPI.playCard(playerId, {
-          card: selectedMinion,
-          target: base,
-        });
-        console.log(current);
+  const handlePlayMinion = useCallback(
+    (base) => () => {
+      console.log('HANSLE PLAY MINION');
+      if (!player) {
+        return;
+      }
   
-        setPlayers(current.players);
-        setSelectedMinion(null);
-      },
-      [
-        player,
-        selectedMinion,
-      ],
-    );
-  
-    const handleEndTurn = useCallback(
-      () => {
-        if (!player) {
-          return;
-        }
-  
-        const current = gameAPI.endTurn(playerId);
-        console.log(current);
-  
-        setPlayers(current.players);
-        setHasStarted(false);
-      },
-      [player],
-    );
-
-    useEffect(
-      () => {
-        console.log(user);
-      },
-      [
-        user,
-      ],
-    );
-    
-    useEffect(() => {
-      const game = gameAPI.getGame();
-      console.log(game);
-  
-      const current = gameAPI.startGame({
-        players: playersData,
+      const current = gameAPI.playCard(playerId, {
+        card: selectedMinion,
+        target: base,
       });
       console.log(current);
   
-      setBases(current.bases);
       setPlayers(current.players);
-    }, []);
+      setSelectedMinion(null);
+    },
+    [
+      player,
+      selectedMinion,
+    ],
+  );
   
-    return (
-      <Authorized>
+  const handleEndTurn = useCallback(
+    () => {
+      console.log('HANDLE END TURN');
+      if (!player) {
+        return;
+      }
+  
+      const current = gameAPI.endTurn(playerId);
+      console.log(current);
+  
+      setPlayers(current.players);
+      setHasStarted(false);
+    },
+    [player],
+  );
+
+  useEffect(
+    () => {
+      console.log('USER:', user);
+      if (!user) {
+        return;
+      }
+
+      const game = gameAPI.getGame();  
+      console.log('GAME:', game);
+
+      const gameState = gameAPI.startGame({
+        players: playersData,
+      });
+      console.log('STATE:', gameState);
+
+      setBases(gameState.bases);
+      setPlayers(gameState.players);
+    },
+    [
+      user,
+    ],
+  );
+
+  return (
+    <Authorized>
       <Container>
         <Row>
-          <Col md="3">
-            { player && <Card>
-              <Card.Header>
-                <Card.Title>
-                  Игрок
-                  {' '}
-                  {playerId}
-                </Card.Title>
-              </Card.Header>
-  
-              {
-                hasStarted
-                ? (
-                  <Container>
-                    <Card>
-                      <Card.Header>
-                        <Card.Title>
-                          Магия
-                        </Card.Title>
-                      </Card.Header>
-                      <Card.Body>
-                        <div className="d-grid gap-2">
-                          { player.actions.map((card) => (
-                            <Button
-                              key={card.id}
-                              disabled={!canPlayAction}
-                              size="lg"
-                              onClick={handlePlayAction}
-                            >
-                              { card.title }
-                            </Button>
-                          )) }
-                        </div>
-                      </Card.Body>
-                    </Card>
-  
-                    <Card>
-                      <Card.Header>
-                        <Card.Title>
-                          Приспешники
-                        </Card.Title>
-                      </Card.Header>
-                      <Card.Body>
-                        <div className="d-grid gap-2">
-                          { player.minions.map((card) => (
-                            <Card
-                              key={card.id}
-                            >
-                              <Card.Header>
-                                <Card.Title>
-                                  { card.title }
-                                </Card.Title>
-                                <Card.Subtitle>
-                                  { card.power }
-                                </Card.Subtitle>
-                              </Card.Header>
-                              <Card.Footer>
-                                <div className="d-grid gap-2">
-                                  <Button
-                                    variant="primary"
-                                    disabled={!canPlayMinion}
-                                    size="lg"
-                                    onClick={handleSelectMinion(card)}
-                                  >
-                                    Разместить
-                                  </Button>
-                                </div>
-                              </Card.Footer>
-                            </Card>
-                          )) }
-                        </div>
-                      </Card.Body>
-                    </Card>
-  
-                    <div className="d-grid gap-2">
-                      <Button
-                        variant="primary"
-                        size="lg"
-                        onClick={handleEndTurn}
-                      >
-                        Закончить
-                      </Button>
-                    </div>
-                  </Container>
-                )
-                : (
-                  <Container>
-                    <div className="d-grid gap-2">
-                      <Button
-                        variant="primary"
-                        size="lg"
-                        onClick={handleStartTurn}
-                        >
-                        Начать
-                      </Button>
-                    </div>
-                  </Container>
-                )
-              }
-            </Card> }
-          </Col>
           <Col>
-            <Container>
-              <Row>
-                {bases.map((base) => (
-                  <Col
-                    key={base.id}
-                    md={4}
-                  >
-                    <Card>
-                      <Card.Header>
-                        { base.captured && (
-                          <Card.Title>
-                            Захвачено!
-                          </Card.Title>
-                        ) }
-                        <Card.Title>
-                          { base.title }
-                        </Card.Title>
-                        <Card.Subtitle>
-                          { base.power }
-                        </Card.Subtitle>
-                        <Row>
-                          { base.score.map((score, id) => (
-                            <Col key={id}>
-                              { score }
-                            </Col>
-                          )) }
-                        </Row>
-                      </Card.Header>
-                      <Card.Body>
-                        { base.minions.map((card) => (
-                          <Card
-                            key={card.id}
-                          >
-                            <Card.Header>
-                              <Card.Title>
-                                { card.title }
-                              </Card.Title>
-                              <Card.Subtitle>
-                                { card.power }
-                              </Card.Subtitle>
-                            </Card.Header>
-                          </Card>
-                        )) }
-                      </Card.Body>
-                      { !base.captured && selectedMinion && (
-                        <Card.Footer>
-                          <Button
-                            variant="primary"
-                            disabled={!canPlayMinion}
-                            size="lg"
-                            onClick={handlePlayMinion(base)}
-                          >
-                            { selectedMinion.title }
-                          </Button>
-                        </Card.Footer>
-                      ) }
-                    </Card>
-                  </Col>
-                ))}
-              </Row>
-            </Container>
+            { player && <PlayerCard
+              name={`Игрок ${playerId}`}
+              actions={player.actions}
+              minions={player.minions}
+              canPlayAction={canPlayAction}
+              canPlayMinion={canPlayMinion}
+              hasStarted={hasStarted}
+              onStartTurn={handleStartTurn}
+              onPlayAction={handleSelectAction}
+              onPlayMinion={handleSelectMinion}
+              onEndTurn={handleEndTurn}
+            /> }
           </Col>
+        </Row>
+        <Row>
+          {bases.map((base) => (
+            <Col
+              key={base.id}
+              md={6}
+            >
+              <Card className="my-2">
+                <Card.Header>
+                  { base.captured && (
+                    <Card.Title>
+                      Захвачено!
+                    </Card.Title>
+                  ) }
+
+                  <Row>
+                    <Col>
+                      <Card.Title>
+                        { base.title }
+                      </Card.Title>
+                    </Col>
+                    <Col md={4}>
+                      <Card.Subtitle>
+                        { base.power }
+                        /
+                        { base.power }
+                      </Card.Subtitle>
+                    </Col>
+                  </Row>
+
+                  <Row>
+                    { base.score.map((score, id) => (
+                      <Col key={id}>
+                        { score }
+                      </Col>
+                    )) }
+                  </Row>
+                </Card.Header>
+
+                <Card.Body>
+                  <Row>
+                    { base.minions.map((card) => (
+                      <Col
+                        key={card.id}
+                        md={4}
+                      >
+                        <Card>
+                          <Card.Header>
+                            <Card.Title>
+                              { card.title }
+                            </Card.Title>
+                            <Card.Subtitle>
+                              { card.power }
+                            </Card.Subtitle>
+                          </Card.Header>
+                        </Card>
+                      </Col>
+                    )) }
+                  </Row>
+                </Card.Body>
+
+                { !base.captured && selectedMinion && (
+                  <Card.Footer>
+                    <Button
+                      variant="primary"
+                      disabled={!canPlayMinion}
+                      size="lg"
+                      onClick={handlePlayMinion(base)}
+                    >
+                      { selectedMinion.title }
+                    </Button>
+                  </Card.Footer>
+                ) }
+              </Card>
+            </Col>
+          ))}
         </Row>
       </Container>
       </Authorized>
