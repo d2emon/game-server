@@ -1,19 +1,20 @@
 import gameAPI from '../game';
-import playersAPI from '../players';
+import playerAPI, {
+  createPlayerAPI,
+} from '../player';
 import Game from './models/game';
 import Player from './models/player';
 
 const gameModel = Game({
   getGame: gameAPI.getGame,
   getBases: gameAPI.getBases,
-  getPlayers: playersAPI.getPlayers,
-  setPlayers: playersAPI.setPlayers,
+  getPlayers: playerAPI.getPlayers,
+  setPlayers: playerAPI.setPlayers,
 });
 const playerModel = Player({
   game: gameModel,
 });
 
-const getGame = () => gameModel.settings();
 const getCurrentGame = () => gameModel.load();
 
 const startGame = async (query) => {
@@ -30,10 +31,36 @@ const startGame = async (query) => {
   };
 }
 
+const gamePlayerAPI = createPlayerAPI;
+
+const startTurn = async (playerId) => {
+  gamePlayerAPI.startTurn(playerId);
+  const data = gameModel.load();
+  return {
+    data,
+  };
+}
+
+const endTurn = async (playerId) => {
+  gamePlayerAPI.endTurn(playerId);
+  const data = gameModel.load();
+  return {
+    data,
+  };
+}
+
+const playCard = (playerId, data) => {
+  gamePlayerAPI.playCard(playerId, data);
+  return gameModel.load();
+}
+
 const currentGameAPI = {
-  getGame,
   getCurrentGame,
   startGame,
+
+  startTurn,
+  endTurn,
+  playCard,
 };
 
 export default currentGameAPI;

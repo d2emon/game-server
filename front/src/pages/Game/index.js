@@ -14,10 +14,13 @@ import BaseCard from '../../components/BaseCard';
 import PlayerCard from '../../components/PlayerCard';
 import Authorized from '../../containers/Authorized';
 import {
+  endTurn,
   selectBases,
   selectHasStarted,
+  selectIsPlayerActive,
   selectPlayers,
   startGame,
+  startTurn,
   updateGame,
 } from '../../reducers/gameSlice';
 import {
@@ -42,10 +45,10 @@ function Game() {
   const dispatch = useDispatch();
 
   const [selectedMinion, setSelectedMinion] = useState(null);
-  const [hasStarted, setHasStarted] = useState(false);
 
   const user = useSelector(selectUser);
-  const gameHasStarted = useSelector(selectHasStarted);
+  const hasStarted = useSelector(selectHasStarted);
+  const isPlayerActive = useSelector(selectIsPlayerActive);
   const bases = useSelector(selectBases);
   const players = useSelector(selectPlayers);
   
@@ -56,16 +59,16 @@ function Game() {
     [players],
   );
   const canPlayAction = useMemo(
-    () => hasStarted && player && (player.canPlayActions > 0),
+    () => isPlayerActive && player && (player.canPlayActions > 0),
     [
-      hasStarted,
+      isPlayerActive,
       player,
     ],
   );
   const canPlayMinion = useMemo(
-    () => hasStarted && player && (player.canPlayMinions > 0),
+    () => isPlayerActive && player && (player.canPlayMinions > 0),
     [
-      hasStarted,
+      isPlayerActive,
       player,
     ],
   );
@@ -73,14 +76,9 @@ function Game() {
   const handleStartTurn = useCallback(
     () => {
       console.log('HANDLE START TURN');
-      const current = gameAPI.startTurn(playerId);
-      console.log(current);
-  
-      dispatch(updateGame({
-        players: current.players,
+      dispatch(startTurn({
+        playerId,
       }));
-
-      setHasStarted(true);
     },
     [
       dispatch,
@@ -89,7 +87,7 @@ function Game() {
   
   const handlePlayAction = useCallback(
     () => {
-      console.log('HANSLE PLAY ACTION');
+      console.log('HANDLE PLAY ACTION');
       if (!player) {
         return;
       }
@@ -108,10 +106,12 @@ function Game() {
 
       dispatch(updateGame({
         players: current.players,
+        isPlayerActive,
       }));
     },
     [
       dispatch,
+      isPlayerActive,
       player,
     ],
   );
@@ -143,12 +143,14 @@ function Game() {
   
       dispatch(updateGame({
         players: current.players,
+        isPlayerActive,
       }));
 
       setSelectedMinion(null);
     },
     [
       dispatch,
+      isPlayerActive,
       player,
       selectedMinion,
     ],
@@ -157,22 +159,12 @@ function Game() {
   const handleEndTurn = useCallback(
     () => {
       console.log('HANDLE END TURN');
-      if (!player) {
-        return;
-      }
-  
-      const current = gameAPI.endTurn(playerId);
-      console.log(current);
-  
-      dispatch(updateGame({
-        players: current.players,
+      dispatch(endTurn({
+        playerId,
       }));
-
-      setHasStarted(false);
     },
     [
       dispatch,
-      player,
     ],
   );
 
@@ -184,7 +176,7 @@ function Game() {
 
       console.log('USER:', user);
   
-      if (gameHasStarted) {
+      if (hasStarted) {
         console.log('STARTED');
         return;
       }
@@ -195,7 +187,7 @@ function Game() {
     },
     [
       dispatch,
-      gameHasStarted,
+      hasStarted,
       user,
     ],
   );
@@ -211,7 +203,7 @@ function Game() {
               minions={player.minions}
               canPlayAction={canPlayAction}
               canPlayMinion={canPlayMinion}
-              hasStarted={hasStarted}
+              hasStarted={isPlayerActive}
               onStartTurn={handleStartTurn}
               onPlayAction={handleSelectAction}
               onPlayMinion={handleSelectMinion}

@@ -6,6 +6,7 @@ const initialState = {
   cardsData: [],
   maxScore: 0,
   hasStarted: false,
+  isPlayerActive: false,
   bases: [],
   players: [],
   error: null,
@@ -19,6 +20,31 @@ export const startGame = createAsyncThunk(
     return response.data;
   },
 );
+
+export const startTurn = createAsyncThunk(
+  'game/startTurn',
+  async (data) => {
+    const {
+      playerId,
+    } = data;
+
+    const response = await gameAPI.startTurn(playerId);
+    console.log(`/api/v1/game/player/${playerId}/start`, response);
+    return response.data;
+  },
+);
+
+export const endTurn = createAsyncThunk(
+  'game/endTurn',
+  async (data) => {
+    const {
+      playerId,
+    } = data;
+    const response = await gameAPI.endTurn(playerId);
+    console.log(`/api/v1/game/player/${playerId}/end`, response);
+    return response.data;
+  },
+);
     
 export const gameSlice = createSlice({
   name: 'game',
@@ -27,6 +53,7 @@ export const gameSlice = createSlice({
     updateGame: (state, action) => ({
       ...state,
       players: action.payload.players,
+      isPlayerActive: action.payload.isPlayerActive,
     }),
   },
   extraReducers: (builder) => {
@@ -46,6 +73,28 @@ export const gameSlice = createSlice({
         bases: action.payload.bases,
         players: action.payload.players,
       }))
+
+      .addCase(startTurn.fulfilled, (state, action) => ({
+        ...state,
+        // basesData: action.payload.game.bases,
+        // cardsData: action.payload.game.cards,
+        // maxScore: action.payload.game.maxScore,
+        // hasStarted: true,
+        // bases: action.payload.bases,
+        players: action.payload.players,
+        isPlayerActive: true,
+      }))
+
+      .addCase(endTurn.fulfilled, (state, action) => ({
+        ...state,
+        // basesData: action.payload.game.bases,
+        // cardsData: action.payload.game.cards,
+        // maxScore: action.payload.game.maxScore,
+        // hasStarted: true,
+        // bases: action.payload.bases,
+        players: action.payload.players,
+        isPlayerActive: false,
+      }))
   },
 });
 
@@ -57,6 +106,7 @@ export const selectBasesData = (state) => state.game.basesData;
 export const selectCardsData = (state) => state.game.cardsData;
 export const selectMaxScore = (state) => state.game.maxScore;
 export const selectHasStarted = (state) => state.game.hasStarted;
+export const selectIsPlayerActive = (state) => state.game.isPlayerActive;
 
 export const selectBases = (state) => state.game.bases;
 export const selectPlayers = (state) => state.game.players;
