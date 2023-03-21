@@ -12,13 +12,13 @@ export const bases = [
     title: 'Школа волшебства',
     power: 20,
     score: [3, 2, 1],
-    onCapture: () => {},
+    // onCapture: () => {},
   }),
   Base({
     title: 'Великая библиотека',
     power: 22,
     score: [4, 2, 1],
-    onCapture: () => {},
+    // onCapture: () => {},
   }),
 ];
   
@@ -57,6 +57,7 @@ export const cards = [
   Minion({
     title: 'Неофит',
     power: 2,
+    /*
     onSummon: (data) => {
       const {
         player,
@@ -75,10 +76,12 @@ export const cards = [
             .forEach((card) => player.hand.push(card));
         });
     },
+    */
   }),
   Minion({
     title: 'Неофит',
     power: 2,
+    /*
     onSummon: (data) => {
       const {
         player,
@@ -97,10 +100,12 @@ export const cards = [
             .forEach((card) => player.hand.push(card));
         });
     },
+    */
   }),
   Minion({
     title: 'Неофит',
     power: 2,
+    /*
     onSummon: (data) => {
       const {
         player,
@@ -119,10 +124,12 @@ export const cards = [
             .forEach((card) => player.hand.push(card));
         });
     },
+    */
   }),
   Minion({
     title: 'Неофит',
     power: 2,
+    /*
     onSummon: (data) => {
       const {
         player,
@@ -141,10 +148,12 @@ export const cards = [
             .forEach((card) => player.hand.push(card));
         });
     },
+    */
   }),
   Minion({
     title: 'Чародейка',
     power: 2,
+    /*
     onSummon: (data) => {
       const {
         player,
@@ -154,10 +163,12 @@ export const cards = [
         .getCards(1)
         .forEach((card) => player.hand.push(card));
     },
+    */
   }),
   Minion({
     title: 'Чародейка',
     power: 2,
+    /*
     onSummon: (data) => {
       const {
         player,
@@ -167,10 +178,12 @@ export const cards = [
         .getCards(1)
         .forEach((card) => player.hand.push(card));
     },
+    */
   }),
   Minion({
     title: 'Чародейка',
     power: 2,
+    /*
     onSummon: (data) => {
       const {
         player,
@@ -180,10 +193,12 @@ export const cards = [
         .getCards(1)
         .forEach((card) => player.hand.push(card));
     },
+    */
   }),
   Minion({
     title: 'Хрономаг',
     power: 3,
+    /*
     onSummon: (data) => {
       const {
         player,
@@ -191,10 +206,12 @@ export const cards = [
       console.log(player);
       player.setCanPlayActions(player.getCanPlayActions() + 1);
     },
+    */
   }),
   Minion({
     title: 'Хрономаг',
     power: 3,
+    /*
     onSummon: (data) => {
       const {
         player,
@@ -202,10 +219,12 @@ export const cards = [
       console.log(player);
       player.setCanPlayActions(player.getCanPlayActions() + 1);
     },
+    */
   }),
   Minion({
     title: 'Архимаг',
     power: 4,
+    /*
     onSummon: (data) => {
       const {
         player,
@@ -219,5 +238,6 @@ export const cards = [
       } = data;
       player.setCanPlayActions(player.getCanPlayActions() + 1);
     },
+    */
   }),
 ];

@@ -12,13 +12,13 @@ export const bases = [
     title: 'Торговый центр "Родос-Плаза"',
     power: 24,
     score: [0, 0, 0],
-    onCapture: () => {},
+    // onCapture: () => {},
   }),
   Base({
     title: 'Кладбище Эванс-Сити',
     power: 20,
     score: [5, 3, 2],
-    onCapture: () => {},
+    // onCapture: () => {},
   }),
 ];
   

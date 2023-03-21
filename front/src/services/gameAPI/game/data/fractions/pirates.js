@@ -1,6 +1,6 @@
 import fractionCards from './card';
 
-export const fractionId = 'ninjas';
+export const fractionId = 'pirates';
 const {
   Base,
   Action,
@@ -9,16 +9,16 @@ const {
 
 export const bases = [
   Base({
-    title: 'Школа ниндзя',
+    title: 'Школа волшебства',
     power: 20,
-    score: [2, 3, 2],
-    onCapture: () => {},
+    score: [3, 2, 1],
+    // onCapture: () => {},
   }),
   Base({
-    title: 'Храм Годзю',
-    power: 18,
-    score: [2, 3, 2],
-    onCapture: () => {},
+    title: 'Великая библиотека',
+    power: 22,
+    score: [4, 2, 1],
+    // onCapture: () => {},
   }),
 ];
   

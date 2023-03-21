@@ -3,8 +3,8 @@ const Card = (data) => ({
     fractionId: null,
     title: '',
     type: null,
-    onTurnStarts: () => {},
-    onTurnEnds: () => {},
+    onTurnStarts: null,
+    onTurnEnds: null,
     ...data,
   });
   
@@ -15,7 +15,7 @@ const Card = (data) => ({
     score: [0, 0, 0],
     title: '',
     type: 'base',
-    onCapture: () => {},
+    onCapture: null,
   ...data,
   });
     
@@ -27,7 +27,7 @@ const Card = (data) => ({
   const Minion = (data) => Card({
     power: 0,
     type: 'minion',
-    onSummon: () => {},
+    onSummon: null,
     ...data,
   });
   

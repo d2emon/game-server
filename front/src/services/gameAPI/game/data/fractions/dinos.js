@@ -12,13 +12,13 @@ export const bases = [
     title: 'Смоляные ямы',
     power: 16,
     score: [4, 3, 2],
-    onCapture: () => {},
+    // onCapture: () => {},
   }),
   Base({
     title: 'Оазис в джунглях',
     power: 12,
     score: [2, 0, 0],
-    onCapture: () => {},
+    // onCapture: () => {},
   }),
 ];
   

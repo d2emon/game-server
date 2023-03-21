@@ -47,10 +47,12 @@ const Player = (player) => {
     setCanPlayActions(1);
     setCanPlayMinions(1);
     inGame.forEach((card) => {
-      console.log(card);
+      console.log('ON TURN START', card, { player: currentPlayer });
+      /*
       card.onTurnStarts({
         player: currentPlayer,
       });
+      */
     });
   };
 
@@ -66,10 +68,12 @@ const Player = (player) => {
     // check for 10 cards
       
     inGame.forEach((card) => {
+      console.log('ON TURN END', card, { player: currentPlayer });
+      /*
       card.onTurnEnds({
         player: currentPlayer,
       });
-      // onTurnEnds
+      */
     });
   };
 
@@ -91,9 +95,12 @@ const Player = (player) => {
       addMinionToBase(card, target);
       inGame.push(card);
       console.log(canPlayActions);
+      console.log('ON SUMMON', card, { player: currentPlayer });
+      /*
       card.onSummon({
         player: currentPlayer,
       });
+      */
       console.log(canPlayActions);
     }
   };

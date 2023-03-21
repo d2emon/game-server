@@ -1,5 +1,5 @@
-import * as GAME_DATA from '../data/game';
-import Deck from './deck';
+import * as GAME_DATA from './data/game';
+import Deck from '../deck';
 
 const GAME = {
   bases: Deck(GAME_DATA.bases),

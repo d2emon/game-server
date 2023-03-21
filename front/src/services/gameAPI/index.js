@@ -1,10 +1,10 @@
 import CURRENT_GAME from './current';
-import GAME from './game';
+import baseGameAPI from './game';
 import PLAYERS from './players';
 
 const gameAPI = {
+  ...baseGameAPI,
   getCurrentGame: CURRENT_GAME.getCurrentGame,
-  getGame: GAME.getGame,
   getPlayers: PLAYERS.getPlayers,
   startGame: CURRENT_GAME.startGame,
   startTurn: (playerId) => {

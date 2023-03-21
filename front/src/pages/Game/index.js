@@ -60,18 +60,14 @@ function Game() {
   
   const handleStartTurn = useCallback(
     () => {
-      console.log('HANSLE START TURN');
-      if (!player) {
-        return;
-      }
-  
+      console.log('HANDLE START TURN');
       const current = gameAPI.startTurn(playerId);
       console.log(current);
   
       setPlayers(current.players);
       setHasStarted(true);
     },
-    [player],
+    [],
   );
   
   const handlePlayAction = useCallback(
