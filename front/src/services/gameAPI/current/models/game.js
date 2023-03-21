@@ -8,19 +8,24 @@ const Game = (data) => {
     setPlayers,
   } = data;
 
+  let game;
   let bases;
   let basesDeck;
 
   const settings = () => getGame();
 
   const load = () => ({
-    bases: bases,
+    game,
+    bases,
     basesDeck: basesDeck ? basesDeck.serialize() : null,
     players: [...getPlayers()],
   });
 
   const start = async (players) => {
     await setPlayers({ players });
+
+    const gameResponse = await getGame();
+    game = gameResponse.data;
 
     const availableBases = getBases();
     basesDeck = Deck(availableBases);

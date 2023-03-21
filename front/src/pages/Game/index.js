@@ -14,13 +14,10 @@ import BaseCard from '../../components/BaseCard';
 import PlayerCard from '../../components/PlayerCard';
 import Authorized from '../../containers/Authorized';
 import {
-  fetchGame,
   selectBases,
-  selectGameStatus,
+  selectHasStarted,
   selectPlayers,
   startGame,
-  STATUS_GAME_READY,
-  STATUS_GAME_SUCCESS,
   updateGame,
 } from '../../reducers/gameSlice';
 import {
@@ -44,13 +41,12 @@ const playersData = [
 function Game() {
   const dispatch = useDispatch();
 
-  const [bases, setBases] = useState([]);
   const [selectedMinion, setSelectedMinion] = useState(null);
   const [hasStarted, setHasStarted] = useState(false);
 
   const user = useSelector(selectUser);
-  const gameStatus = useSelector(selectGameStatus);
-  const startingBases = useSelector(selectBases);
+  const gameHasStarted = useSelector(selectHasStarted);
+  const bases = useSelector(selectBases);
   const players = useSelector(selectPlayers);
   
   const player = useMemo(
@@ -186,32 +182,22 @@ function Game() {
         return;
       }
 
-      if (gameStatus === STATUS_GAME_READY) {
-        dispatch(fetchGame());
+      console.log('USER:', user);
+  
+      if (gameHasStarted) {
+        console.log('STARTED');
         return;
       }
 
-      if (gameStatus === STATUS_GAME_SUCCESS) {
-        console.log('USER:', user);
-  
-        dispatch(startGame({
-          players: playersData,
-        }));
-      }
+      dispatch(startGame({
+        players: playersData,
+      }));
     },
     [
       dispatch,
-      gameStatus,
+      gameHasStarted,
       user,
     ],
-  );
-
-  useEffect(
-    () => {
-      console.log('BASES:', startingBases);
-      setBases(startingBases);
-    },
-    [startingBases],
   );
 
   return (

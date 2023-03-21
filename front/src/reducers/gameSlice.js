@@ -1,11 +1,6 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import gameAPI from '../services/gameAPI';
 
-export const STATUS_GAME_READY = 'STATUS_GAME_READY';
-export const STATUS_GAME_LOADING = 'STATUS_GAME_LOADING';
-export const STATUS_GAME_SUCCESS = 'STATUS_GAME_SUCCESS';
-export const STATUS_GAME_ERROR = 'STATUS_GAME_ERROR';
-
 const initialState = {
   basesData: [],
   cardsData: [],
@@ -14,17 +9,7 @@ const initialState = {
   bases: [],
   players: [],
   error: null,
-  status: STATUS_GAME_READY,
 };
-
-export const fetchGame = createAsyncThunk(
-  'game/fetchGame',
-  async () => {
-    const response = await gameAPI.getGame();
-    console.log('/api/v1/game', response);
-    return response.data;
-  },
-);
 
 export const startGame = createAsyncThunk(
   'game/startGame',
@@ -46,22 +31,6 @@ export const gameSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      .addCase(fetchGame.pending, (state) => ({
-        ...state,
-        status: STATUS_GAME_LOADING,
-      }))
-      .addCase(fetchGame.fulfilled, (state, action) => ({
-        ...state,
-        basesData: action.payload.bases,
-        cardsData: action.payload.cards,
-        maxScore: action.payload.maxScore,
-        status: STATUS_GAME_SUCCESS,
-      }))
-      .addCase(fetchGame.rejected, (state) => ({
-        ...state,
-        status: STATUS_GAME_ERROR,
-      }))
-
       .addCase(startGame.pending, (state) => ({
         ...state,
         hasStarted: false,
@@ -70,6 +39,9 @@ export const gameSlice = createSlice({
       }))
       .addCase(startGame.fulfilled, (state, action) => ({
         ...state,
+        basesData: action.payload.game.bases,
+        cardsData: action.payload.game.cards,
+        maxScore: action.payload.game.maxScore,
         hasStarted: true,
         bases: action.payload.bases,
         players: action.payload.players,
@@ -81,11 +53,11 @@ export const { updateGame } = gameSlice.actions;
 
 // Selectors
 
-export const selectGameStatus = (state) => state.game.status;
-
 export const selectBasesData = (state) => state.game.basesData;
 export const selectCardsData = (state) => state.game.cardsData;
 export const selectMaxScore = (state) => state.game.maxScore;
+export const selectHasStarted = (state) => state.game.hasStarted;
+
 export const selectBases = (state) => state.game.bases;
 export const selectPlayers = (state) => state.game.players;
 
