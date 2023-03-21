@@ -5,13 +5,12 @@ import React, {
   useState,
 } from 'react';
 import {
-  Button,
-  Card,
   Col,
   Container,
   Row,
 } from 'react-bootstrap';
 import { useSelector } from 'react-redux';
+import BaseCard from '../../components/BaseCard';
 import PlayerCard from '../../components/PlayerCard';
 import Authorized from '../../containers/Authorized';
 import { selectUser } from '../../reducers/userSlice';
@@ -195,74 +194,17 @@ function Game() {
             <Col
               key={base.id}
               md={6}
+              className="my-2"
             >
-              <Card className="my-2">
-                <Card.Header>
-                  { base.captured && (
-                    <Card.Title>
-                      Захвачено!
-                    </Card.Title>
-                  ) }
-
-                  <Row>
-                    <Col>
-                      <Card.Title>
-                        { base.title }
-                      </Card.Title>
-                    </Col>
-                    <Col md={4}>
-                      <Card.Subtitle>
-                        { base.power }
-                        /
-                        { base.power }
-                      </Card.Subtitle>
-                    </Col>
-                  </Row>
-
-                  <Row>
-                    { base.score.map((score, id) => (
-                      <Col key={id}>
-                        { score }
-                      </Col>
-                    )) }
-                  </Row>
-                </Card.Header>
-
-                <Card.Body>
-                  <Row>
-                    { base.minions.map((card) => (
-                      <Col
-                        key={card.id}
-                        md={4}
-                      >
-                        <Card>
-                          <Card.Header>
-                            <Card.Title>
-                              { card.title }
-                            </Card.Title>
-                            <Card.Subtitle>
-                              { card.power }
-                            </Card.Subtitle>
-                          </Card.Header>
-                        </Card>
-                      </Col>
-                    )) }
-                  </Row>
-                </Card.Body>
-
-                { !base.captured && selectedMinion && (
-                  <Card.Footer>
-                    <Button
-                      variant="primary"
-                      disabled={!canPlayMinion}
-                      size="lg"
-                      onClick={handlePlayMinion(base)}
-                    >
-                      { selectedMinion.title }
-                    </Button>
-                  </Card.Footer>
-                ) }
-              </Card>
+              <BaseCard
+                title={base.title}
+                power={base.power}
+                scores={base.score}
+                minions={[...base.minions]}
+                hasCaptured={base.captured}
+                selectedMinion={(!base.captured) && canPlayMinion && selectedMinion}
+                onPlayMinion={handlePlayMinion(base)}
+              />
             </Col>
           ))}
         </Row>
