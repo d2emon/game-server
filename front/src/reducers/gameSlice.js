@@ -5,6 +5,7 @@ const initialState = {
   basesData: [],
   cardsData: [],
   maxScore: 0,
+  playerId: null,
   hasStarted: false,
   isPlayerActive: false,
   bases: [],
@@ -23,10 +24,12 @@ export const startGame = createAsyncThunk(
 
 export const startTurn = createAsyncThunk(
   'game/startTurn',
-  async (data) => {
+  async (payload, thunkAPI) => {
     const {
-      playerId,
-    } = data;
+      game: {
+        playerId,
+      },
+    } = thunkAPI.getState();
 
     const response = await gameAPI.startTurn(playerId);
     console.log(`/api/v1/game/player/${playerId}/start`, response);
@@ -36,10 +39,13 @@ export const startTurn = createAsyncThunk(
 
 export const endTurn = createAsyncThunk(
   'game/endTurn',
-  async (data) => {
+  async (payload, thunkAPI) => {
     const {
-      playerId,
-    } = data;
+      game: {
+        playerId,
+      },
+    } = thunkAPI.getState();
+
     const response = await gameAPI.endTurn(playerId);
     console.log(`/api/v1/game/player/${playerId}/end`, response);
     return response.data;
@@ -60,6 +66,7 @@ export const gameSlice = createSlice({
     builder
       .addCase(startGame.pending, (state) => ({
         ...state,
+        playerId: null,
         hasStarted: false,
         bases: [],
         players: [],
@@ -69,6 +76,7 @@ export const gameSlice = createSlice({
         basesData: action.payload.game.bases,
         cardsData: action.payload.game.cards,
         maxScore: action.payload.game.maxScore,
+        playerId: 0,
         hasStarted: true,
         bases: action.payload.bases,
         players: action.payload.players,
@@ -105,6 +113,11 @@ export const { updateGame } = gameSlice.actions;
 export const selectBasesData = (state) => state.game.basesData;
 export const selectCardsData = (state) => state.game.cardsData;
 export const selectMaxScore = (state) => state.game.maxScore;
+
+export const selectPlayerId = (state) => state.game.playerId;
+export const selectPlayer = (state) => (state.game.players.length > state.game.playerId)
+  ? state.game.players[state.game.playerId]
+  : null;
 export const selectHasStarted = (state) => state.game.hasStarted;
 export const selectIsPlayerActive = (state) => state.game.isPlayerActive;
 

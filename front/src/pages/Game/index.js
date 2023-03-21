@@ -1,6 +1,5 @@
 import React, {
   useCallback,
-  useEffect,
   useMemo,
   useState,
 } from 'react';
@@ -12,52 +11,28 @@ import {
 import { useDispatch, useSelector } from 'react-redux';
 import BaseCard from '../../components/BaseCard';
 import PlayerCard from '../../components/PlayerCard';
-import Authorized from '../../containers/Authorized';
+import InGame from '../../containers/InGame';
 import {
   endTurn,
   selectBases,
-  selectHasStarted,
   selectIsPlayerActive,
-  selectPlayers,
-  startGame,
+  selectPlayer,
+  selectPlayerId,
   startTurn,
   updateGame,
 } from '../../reducers/gameSlice';
-import {
-  selectUser,
-} from '../../reducers/userSlice';
 import gameAPI from '../../services/gameAPI';
-  
-const playerId = 0;
-const playersData = [
-  {
-    fractions: ['dinos', 'wizards'],
-  },
-  {
-    fractions: ['dinos', 'wizards'],
-  },
-  {
-    fractions: ['dinos', 'wizards'],
-  },
-];
   
 function Game() {
   const dispatch = useDispatch();
 
   const [selectedMinion, setSelectedMinion] = useState(null);
 
-  const user = useSelector(selectUser);
-  const hasStarted = useSelector(selectHasStarted);
+  const playerId = useSelector(selectPlayerId);
+  const player = useSelector(selectPlayer);
   const isPlayerActive = useSelector(selectIsPlayerActive);
   const bases = useSelector(selectBases);
-  const players = useSelector(selectPlayers);
   
-  const player = useMemo(
-    () => (players.length > playerId)
-      ? players[playerId]
-      : null,
-    [players],
-  );
   const canPlayAction = useMemo(
     () => isPlayerActive && player && (player.canPlayActions > 0),
     [
@@ -65,6 +40,7 @@ function Game() {
       player,
     ],
   );
+
   const canPlayMinion = useMemo(
     () => isPlayerActive && player && (player.canPlayMinions > 0),
     [
@@ -74,15 +50,13 @@ function Game() {
   );
   
   const handleStartTurn = useCallback(
-    () => {
-      console.log('HANDLE START TURN');
-      dispatch(startTurn({
-        playerId,
-      }));
-    },
-    [
-      dispatch,
-    ],
+    () => dispatch(startTurn()),
+    [dispatch],
+  );
+  
+  const handleEndTurn = useCallback(
+    () => dispatch(endTurn()),
+    [dispatch],
   );
   
   const handlePlayAction = useCallback(
@@ -112,6 +86,7 @@ function Game() {
     [
       dispatch,
       isPlayerActive,
+      playerId,
       player,
     ],
   );
@@ -151,49 +126,14 @@ function Game() {
     [
       dispatch,
       isPlayerActive,
+      playerId,
       player,
       selectedMinion,
     ],
   );
-  
-  const handleEndTurn = useCallback(
-    () => {
-      console.log('HANDLE END TURN');
-      dispatch(endTurn({
-        playerId,
-      }));
-    },
-    [
-      dispatch,
-    ],
-  );
-
-  useEffect(
-    () => {
-      if (!user) {
-        return;
-      }
-
-      console.log('USER:', user);
-  
-      if (hasStarted) {
-        console.log('STARTED');
-        return;
-      }
-
-      dispatch(startGame({
-        players: playersData,
-      }));
-    },
-    [
-      dispatch,
-      hasStarted,
-      user,
-    ],
-  );
 
   return (
-    <Authorized>
+    <InGame>
       <Container>
         <Row>
           <Col>
@@ -231,9 +171,9 @@ function Game() {
           ))}
         </Row>
       </Container>
-      </Authorized>
-    );
-  }
+    </InGame>
+  );
+}
   
-  export default Game;
+export default Game;
   
