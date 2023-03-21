@@ -9,11 +9,23 @@ import {
   Container,
   Row,
 } from 'react-bootstrap';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import BaseCard from '../../components/BaseCard';
 import PlayerCard from '../../components/PlayerCard';
 import Authorized from '../../containers/Authorized';
-import { selectUser } from '../../reducers/userSlice';
+import {
+  fetchGame,
+  selectBases,
+  selectGameStatus,
+  selectPlayers,
+  startGame,
+  STATUS_GAME_READY,
+  STATUS_GAME_SUCCESS,
+  updateGame,
+} from '../../reducers/gameSlice';
+import {
+  selectUser,
+} from '../../reducers/userSlice';
 import gameAPI from '../../services/gameAPI';
   
 const playerId = 0;
@@ -30,13 +42,17 @@ const playersData = [
 ];
   
 function Game() {
+  const dispatch = useDispatch();
+
   const [bases, setBases] = useState([]);
-  const [players, setPlayers] = useState([]);
   const [selectedMinion, setSelectedMinion] = useState(null);
   const [hasStarted, setHasStarted] = useState(false);
 
   const user = useSelector(selectUser);
-    
+  const gameStatus = useSelector(selectGameStatus);
+  const startingBases = useSelector(selectBases);
+  const players = useSelector(selectPlayers);
+  
   const player = useMemo(
     () => (players.length > playerId)
       ? players[playerId]
@@ -64,10 +80,15 @@ function Game() {
       const current = gameAPI.startTurn(playerId);
       console.log(current);
   
-      setPlayers(current.players);
+      dispatch(updateGame({
+        players: current.players,
+      }));
+
       setHasStarted(true);
     },
-    [],
+    [
+      dispatch,
+    ],
   );
   
   const handlePlayAction = useCallback(
@@ -88,9 +109,15 @@ function Game() {
         card,
       });
       console.log(current);
-      setPlayers(current.players);
+
+      dispatch(updateGame({
+        players: current.players,
+      }));
     },
-    [player],
+    [
+      dispatch,
+      player,
+    ],
   );
   
   const handleSelectAction = useCallback(
@@ -118,10 +145,14 @@ function Game() {
       });
       console.log(current);
   
-      setPlayers(current.players);
+      dispatch(updateGame({
+        players: current.players,
+      }));
+
       setSelectedMinion(null);
     },
     [
+      dispatch,
       player,
       selectedMinion,
     ],
@@ -137,33 +168,50 @@ function Game() {
       const current = gameAPI.endTurn(playerId);
       console.log(current);
   
-      setPlayers(current.players);
+      dispatch(updateGame({
+        players: current.players,
+      }));
+
       setHasStarted(false);
     },
-    [player],
+    [
+      dispatch,
+      player,
+    ],
   );
 
   useEffect(
     () => {
-      console.log('USER:', user);
       if (!user) {
         return;
       }
 
-      const game = gameAPI.getGame();  
-      console.log('GAME:', game);
+      if (gameStatus === STATUS_GAME_READY) {
+        dispatch(fetchGame());
+        return;
+      }
 
-      const gameState = gameAPI.startGame({
-        players: playersData,
-      });
-      console.log('STATE:', gameState);
-
-      setBases(gameState.bases);
-      setPlayers(gameState.players);
+      if (gameStatus === STATUS_GAME_SUCCESS) {
+        console.log('USER:', user);
+  
+        dispatch(startGame({
+          players: playersData,
+        }));
+      }
     },
     [
+      dispatch,
+      gameStatus,
       user,
     ],
+  );
+
+  useEffect(
+    () => {
+      console.log('BASES:', startingBases);
+      setBases(startingBases);
+    },
+    [startingBases],
   );
 
   return (

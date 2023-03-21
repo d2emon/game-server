@@ -8,6 +8,7 @@ export const STATUS_USER_ERROR = 'STATUS_USER_ERROR';
 const initialState = {
   userId: null,
   name: null,
+  user: null,
   error: null,
   status: STATUS_USER_READY,
 };
@@ -25,6 +26,7 @@ export const fetchUser = createAsyncThunk(
   'user/fetchUser',
   async (userId) => {
     const response = await userMockApi.fetchUser(userId);
+    console.log(`/api/v1/user/${userId}`, response);
     return response.data;
   },
 );
@@ -38,18 +40,26 @@ export const userSlice = createSlice({
         ...state,
         userId: null,
         name: '',
+        user: null,
         status: STATUS_USER_LOADING,
       }))
       .addCase(fetchUser.fulfilled, (state, action) => ({
         ...state,
         userId: action.payload.userId,
         name: action.payload.name,
+        user: (action.payload.userId)
+          ? {
+            userId: action.payload.userId,
+            name: action.payload.name,    
+          }
+          : null,
         status: STATUS_USER_SUCCESS,
       }))
       .addCase(fetchUser.rejected, (state) => ({
         ...state,
         userId: null,
         name: '',
+        user: null,
         status: STATUS_USER_ERROR,
       }))
   },
@@ -59,12 +69,6 @@ export const userSlice = createSlice({
 
 export const selectUserStatus = (state) => state.user.status;
 
-export const selectUser = (state) => ((state.user.userId)
-  ? {
-    userId: state.user.userId,
-    name: state.user.name,
-  }
-  : null
-);
+export const selectUser = (state) => state.user.user;
 
 export default userSlice.reducer; 

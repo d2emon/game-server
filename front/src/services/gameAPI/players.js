@@ -1,5 +1,5 @@
-import GAME from './game';
-import Deck from './deck';
+import gameAPI from './game';
+import Deck from './current/models/deck';
 
 let PLAYERS = [];
 
@@ -10,7 +10,8 @@ const Player = (player) => {
     addMinionToBase,
     checkBases,
   } = player;
-  const deck = Deck(GAME.getFractions(fractions));
+  const cards = gameAPI.getFractions(fractions);
+  const deck = Deck(cards);
   deck.shuffle();
 
   let discard = [];
@@ -136,7 +137,7 @@ const Player = (player) => {
 const getPlayers = () => PLAYERS
   .map(player => player.serialize());
 
-const setPlayers = (data) => {
+const setPlayers = async (data) => {
   const {
     players,
   } = data;

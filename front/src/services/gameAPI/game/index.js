@@ -1,5 +1,5 @@
 import * as GAME_DATA from './data/game';
-import Deck from '../deck';
+import Deck from '../current/models/deck';
 
 const GAME = {
   bases: Deck(GAME_DATA.bases),
@@ -12,10 +12,12 @@ const getFractions = (fractions) => GAME
   .cards
   .serialize()
   .filter((card) => (fractions.indexOf(card.fractionId) >= 0));
-const getGame = () => ({
-  bases: GAME.bases.serialize(),
-  cards: GAME.cards.serialize(),
-  maxScore: GAME.maxScore,     
+const getGame = () => Promise.resolve({
+  data: {
+    bases: GAME.bases.serialize(),
+    cards: GAME.cards.serialize(),
+    maxScore: GAME.maxScore,
+  },
 });
 
 const gameAPI = {
