@@ -1,11 +1,14 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import {
   Button,
   Card,
+  Carousel,
   Col,
   Container,
   Row,
 } from 'react-bootstrap';
+
+import './playerCard.css';
 
 function ActionCard (props) {
   const {
@@ -15,7 +18,7 @@ function ActionCard (props) {
   } = props;
 
   return (
-    <Card className="my-2">
+    <Card className="my-2 player-card">
       <Card.Header>
         <Card.Title>
           Магия
@@ -46,7 +49,7 @@ function MinionCard (props) {
   } = props;
   
   return (
-    <Card className="my-2">
+    <Card className="my-2 player-card">
       <Card.Header>
         <Card.Title>
           { title }
@@ -82,6 +85,44 @@ function PlayerControls (props) {
     onEndTurn,
   } = props;
 
+  const cardGroups = useMemo(
+    () => {
+      const actionCards = actions.map((card) => (
+        <ActionCard
+          disabled={!canPlayAction}
+          title={card.title}
+          onPlay={onPlayAction(card)}
+        />
+      ));
+      const minionCards = minions.map((card) => (
+        <MinionCard
+          disabled={!canPlayMinion}
+          title={card.title}
+          power={card.power}
+          onPlay={onPlayMinion(card)}
+        />
+      ));
+      const cards = [
+        ...actionCards,
+        ...minionCards,
+      ];
+      const maxCards = 4;
+      const result = [];
+      for (let i = 0; i < cards.length; i += maxCards) {
+        result.push(cards.slice(i, i + maxCards));
+      }
+      return result;
+    },
+    [
+      actions,
+      minions,
+      canPlayAction,
+      canPlayMinion,
+      onPlayAction,
+      onPlayMinion,
+    ]
+  );
+
   return (
     <Container>
       <div className="d-grid gap-2 my-2">
@@ -94,34 +135,24 @@ function PlayerControls (props) {
         </Button>
       </div>
 
-      <Row>
-        { actions.map((card) => (
-          <Col
-            key={card.id}
-            md={3}
-          >
-            <ActionCard
-              disabled={!canPlayAction}
-              title={card.title}
-              onPlay={onPlayAction(card)}
-            />  
-          </Col>
-        )) }
-
-        { minions.map((card) => (
-          <Col
-            key={card.id}
-            md={3}
-          >
-            <MinionCard
-              disabled={!canPlayMinion}
-              title={card.title}
-              power={card.power}
-              onPlay={onPlayMinion(card)}
-            />
-          </Col>
-        )) }
-      </Row>
+      <Carousel
+        interval={null}
+        variant="dark"
+      >
+          { cardGroups.map((cards, groupId) => (
+            <Carousel.Item key={groupId}>
+              <Container>
+                <Row className="player-cards-group">
+                  { cards.map((card, cardId) => (
+                    <Col key={cardId} md={3}>
+                      { card }
+                    </Col>
+                  )) }
+                </Row>
+              </Container>
+            </Carousel.Item>    
+          )) }
+      </Carousel>
     </Container>
   );
 };
