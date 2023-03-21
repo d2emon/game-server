@@ -51,6 +51,21 @@ export const endTurn = createAsyncThunk(
     return response.data;
   },
 );
+
+export const playCard = createAsyncThunk(
+  'game/playCard',
+  async (payload, thunkAPI) => {
+    const {
+      game: {
+        playerId,
+      },
+    } = thunkAPI.getState();
+
+    const response = await gameAPI.playCardById(playerId, payload);
+    console.log(`/api/v1/game/player/${playerId}/play`, payload, response);
+    return response.data;
+  },
+);
     
 export const gameSlice = createSlice({
   name: 'game',
@@ -102,6 +117,11 @@ export const gameSlice = createSlice({
         // bases: action.payload.bases,
         players: action.payload.players,
         isPlayerActive: false,
+      }))
+
+      .addCase(playCard.fulfilled, (state, action) => ({
+        ...state,
+        players: action.payload.players,
       }))
   },
 });

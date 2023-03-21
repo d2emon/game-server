@@ -14,6 +14,10 @@ export const createPlayerAPI = {
     playerId,
     player => player.startTurn(),
   ),
+  playCardById: (playerId, data) => playerAction(
+    playerId,
+    player => player.playCardById(data),
+  ),
   playCard: (playerId, data) => playerAction(
     playerId,
     player => player.playCard(data),

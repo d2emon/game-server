@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import {
   Button,
   Card,
@@ -7,38 +7,9 @@ import {
   Container,
   Row,
 } from 'react-bootstrap';
+import ActionCard from '../ActionCard';
 
 import './playerCard.css';
-
-function ActionCard (props) {
-  const {
-    disabled,
-    title,
-    onPlay,
-  } = props;
-
-  return (
-    <Card className="my-2 player-card">
-      <Card.Header>
-        <Card.Title>
-          Магия
-        </Card.Title>
-      </Card.Header>
-
-      <Card.Body>
-        <div className="d-grid gap-2">
-          <Button
-            disabled={disabled}
-            size="lg"
-            onClick={onPlay}
-          >
-            {title}
-          </Button>
-        </div>
-      </Card.Body>
-    </Card>
-  );
-};
 
 function MinionCard (props) {
   const {
@@ -85,21 +56,34 @@ function PlayerControls (props) {
     onEndTurn,
   } = props;
 
+  const handlePlayAction = useCallback(
+    (card) => () => onPlayAction(card),
+    [onPlayAction],
+  )
+
+  const handlePlayMinion = useCallback(
+    (card) => () => onPlayMinion(card),
+    [onPlayMinion],
+  )
+
   const cardGroups = useMemo(
     () => {
       const actionCards = actions.map((card) => (
         <ActionCard
+          key={card.id}
           disabled={!canPlayAction}
           title={card.title}
-          onPlay={onPlayAction(card)}
+          text={card.text}
+          onPlay={handlePlayAction(card)}
         />
       ));
       const minionCards = minions.map((card) => (
         <MinionCard
+          key={card.id}
           disabled={!canPlayMinion}
           title={card.title}
           power={card.power}
-          onPlay={onPlayMinion(card)}
+          onPlay={handlePlayMinion(card)}
         />
       ));
       const cards = [
@@ -118,8 +102,8 @@ function PlayerControls (props) {
       minions,
       canPlayAction,
       canPlayMinion,
-      onPlayAction,
-      onPlayMinion,
+      handlePlayAction,
+      handlePlayMinion,
     ]
   );
 

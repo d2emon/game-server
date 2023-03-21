@@ -17,7 +17,49 @@ const Player = (player) => {
     deck.shuffle();
   
     let discard = [];
-  
+
+    const cardActions = {
+      discardTarget: (payload) => {
+        console.log('DISCARD TARGET', payload);
+      },
+      findAction: (payload) => {
+        console.log('FIND ACTION', payload);
+      },
+      getCard: (payload) => {
+        console.log('GET CARD', payload);
+      },
+      getMinion: (payload) => {
+        console.log('GET MINION', payload);
+      },
+      getSelected: (payload) => {
+        console.log('GET MINION', payload);
+      },
+      playExtraAction: (payload) => {
+        console.log('PLAY EXTRA ACTION', payload);
+      },
+      playExtraMinion: (payload) => {
+        console.log('PLAY EXTRA MINION', payload);
+      },
+      returnFullHand: (payload) => {
+        console.log('RETURN FULL HAND', payload);
+      },
+      showDeck: (payload) => {
+        console.log('SHOW DECK', payload);
+      },
+      showFromEveryDeck: (payload) => {
+        console.log('SHOW FROM EVERY DECK', payload);
+      },
+      showToAll: (payload) => {
+        console.log('SHOW TO ALL', payload);
+      },
+      shuffle: (payload) => {
+        console.log('SHUFFLE', payload);
+      },
+      sortVisible: (payload) => {
+        console.log('SORT VISIBLE', payload);
+      },
+    };
+    
     let hand = deck.getCards(5);
     const getActions = () => hand.filter((card) => (card.type === 'action'));
     const getMinions = () => hand.filter((card) => (card.type === 'minion'));
@@ -109,6 +151,53 @@ const Player = (player) => {
       }
     };
   
+    const playCardById = (data) => {
+      const {
+        cardId,
+      } = data;
+
+      /*
+      const currentPlayer = getCurrentPlayer();
+
+      console.log(currentPlayer, data);
+
+      if (!currentPlayer) {
+        return;
+      }
+      */
+
+      if (!cardId) {
+        return;
+      }
+
+      const card = hand.find((item) => (item.id === cardId));
+      console.log('CARD:', card);
+      
+      if ((card.type === 'action') && (canPlayActions > 0)) {
+        canPlayActions -= 1;
+      }
+
+      if (card.onPlay) {
+        console.log('TARGET:', card.onPlay.target);
+
+        const actions = card.onPlay.actions || [];
+        actions.forEach((payload) => {
+          const {
+            action,
+          } = payload;
+
+          const handler = cardActions[action];
+          if (handler) {
+            handler(payload);
+          } else {
+            console.log('!!!UNKNOWN:', action, payload);
+          }
+        });
+      }
+  
+      hand = hand.filter(item => (item.id !== card.id));  
+    };
+
     return {
       serialize: () => ({
         id,
@@ -124,6 +213,7 @@ const Player = (player) => {
       }),
       startTurn,
       playCard,
+      playCardById,
       endTurn,
   
       getCanPlayActions,

@@ -14,6 +14,7 @@ import PlayerCard from '../../components/PlayerCard';
 import InGame from '../../containers/InGame';
 import {
   endTurn,
+  playCard,
   selectBases,
   selectIsPlayerActive,
   selectPlayer,
@@ -60,42 +61,16 @@ function Game() {
   );
   
   const handlePlayAction = useCallback(
-    () => {
-      console.log('HANDLE PLAY ACTION');
-      if (!player) {
+    (card) => {
+      if (!card) {
         return;
       }
-  
-      if (player.actions.length <= 0) {
-        return;
-      }
-  
-      const card = player.actions[0];
-      console.log(card);
-  
-      const current = gameAPI.playCard(playerId, {
-        card,
-      });
-      console.log(current);
 
-      dispatch(updateGame({
-        players: current.players,
-        isPlayerActive,
+      dispatch(playCard({
+        cardId: card.id,
       }));
     },
-    [
-      dispatch,
-      isPlayerActive,
-      playerId,
-      player,
-    ],
-  );
-  
-  const handleSelectAction = useCallback(
-    () => () => handlePlayAction(),
-    [
-      handlePlayAction,
-    ],
+    [dispatch],
   );
   
   const handleSelectMinion = useCallback(
@@ -145,7 +120,7 @@ function Game() {
               canPlayMinion={canPlayMinion}
               hasStarted={isPlayerActive}
               onStartTurn={handleStartTurn}
-              onPlayAction={handleSelectAction}
+              onPlayAction={handlePlayAction}
               onPlayMinion={handleSelectMinion}
               onEndTurn={handleEndTurn}
             /> }

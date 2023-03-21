@@ -49,6 +49,14 @@ const endTurn = async (playerId) => {
   };
 }
 
+const playCardById = async (playerId, query) => {
+  gamePlayerAPI.playCardById(playerId, query);
+  const data = gameModel.load();
+  return {
+    data,
+  };
+}
+
 const playCard = (playerId, data) => {
   gamePlayerAPI.playCard(playerId, data);
   return gameModel.load();
@@ -60,6 +68,8 @@ const currentGameAPI = {
 
   startTurn,
   endTurn,
+  playCardById,
+
   playCard,
 };
 
