@@ -2,14 +2,20 @@ import React, { useCallback, useMemo } from 'react';
 import {
   Button,
   Card,
+  CardGroup,
   Carousel,
-  Col,
   Container,
-  Row,
 } from 'react-bootstrap';
 import ActionCard from '../ActionCard';
 
 import './playerCard.css';
+
+function PlaceholderCard () {
+  return (
+    <Card className="my-2 player-card">
+    </Card>
+  );
+}
 
 function MinionCard (props) {
   const {
@@ -90,10 +96,17 @@ function PlayerControls (props) {
         ...actionCards,
         ...minionCards,
       ];
-      const maxCards = 4;
+      const maxCards = 5;
       const result = [];
       for (let i = 0; i < cards.length; i += maxCards) {
-        result.push(cards.slice(i, i + maxCards));
+        const group = [];
+        for (let j = 0; j < maxCards; j += 1) {
+          const card = ((i + j) < cards.length)
+            ? cards[i + j]
+            : (<PlaceholderCard key={`card-${i + j}`} />);
+          group.push(card);
+        }
+        result.push(group);
       }
       return result;
     },
@@ -108,36 +121,36 @@ function PlayerControls (props) {
   );
 
   return (
-    <Container>
-      <div className="d-grid gap-2 my-2">
-        <Button
-          variant="primary"
-          size="lg"
-          onClick={onEndTurn}
-        >
-          Закончить
-        </Button>
-      </div>
+    <>
+      <Container>
+        <div className="d-grid gap-2 my-2">
+          <Button
+            variant="primary"
+            size="lg"
+            onClick={onEndTurn}
+          >
+            Закончить
+          </Button>
+        </div>
+      </Container>
 
       <Carousel
         interval={null}
+        indicators={false}
         variant="dark"
       >
-          { cardGroups.map((cards, groupId) => (
-            <Carousel.Item key={groupId}>
-              <Container>
-                <Row className="player-cards-group">
-                  { cards.map((card, cardId) => (
-                    <Col key={cardId} md={3}>
-                      { card }
-                    </Col>
-                  )) }
-                </Row>
-              </Container>
-            </Carousel.Item>    
-          )) }
+        { cardGroups.map((cards, groupId) => (
+          <Carousel.Item key={groupId}>
+            <CardGroup
+              key={groupId}
+              className="player-cards-group"
+            >
+              { cards }
+            </CardGroup>
+          </Carousel.Item>
+        )) }
       </Carousel>
-    </Container>
+    </>
   );
 };
 

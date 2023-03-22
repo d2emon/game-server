@@ -1,7 +1,10 @@
 .player-cards-group {
-  margin: 32px 100px 32px 100px;
+  /*
+  margin: 32px 124px 32px 124px;
+  */
+  margin: 32px 32px 32px 32px;
 }
 
 .player-card {
-  min-height: 175px;
+  min-height: 400px;
 }
