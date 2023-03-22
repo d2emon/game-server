@@ -1,5 +1,5 @@
 import * as GAME_DATA from './data/game';
-import Deck from '../current/models/deck';
+import Deck from '../models/deck';
 
 const GAME = {
   bases: Deck(GAME_DATA.bases),

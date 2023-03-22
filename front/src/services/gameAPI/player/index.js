@@ -12,13 +12,13 @@ export const createPlayerAPI = {
     playerId,
     player => player.startTurn(),
   ),
-  playCardById: (playerId, data) => playerAction(
-    playerId,
-    player => player.playCardById(data.cardId),
-  ),
   endTurn: (playerId) => playerAction(
     playerId,
     player => player.endTurn(),
+  ),
+  playCardById: (playerId, data) => playerAction(
+    playerId,
+    player => player.playCardById(data.cardId),
   ),
 };
 
