@@ -1,4 +1,4 @@
-const Database = (model) => {
+const Database = () => {
   let ITEMS = [];
   
   const all = () => ITEMS
@@ -7,7 +7,7 @@ const Database = (model) => {
   const byId = (itemId) => ITEMS[itemId];
   
   const fill = async (items) => {
-    ITEMS = items.map(model);
+    ITEMS = [...items];
     return [...ITEMS];
   };
   

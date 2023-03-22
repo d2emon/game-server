@@ -1,12 +1,38 @@
 import Deck from './deck';
 
+const Players = (data) => {
+  const {
+    setPlayers,
+    getPlayers,
+  } = data;
+
+  let ITEMS = [];
+
+  const all = () => {
+    return [...getPlayers()];
+  }
+
+  const count = async () => ITEMS.length;
+
+  const init = async (values) => {
+    ITEMS = [...values];
+    await setPlayers({ players: values });
+  };
+
+  return {
+    all,
+    count,
+    init,
+  }
+}
+
 const Game = (data) => {
   const {
     getGame,
     getBases,
-    getPlayers,
-    setPlayers,
+    getFractions,
   } = data;
+  const playersDb = Players(data);
 
   let game;
   let bases;
@@ -18,11 +44,18 @@ const Game = (data) => {
     game,
     bases,
     basesDeck: basesDeck ? basesDeck.serialize() : null,
-    players: [...getPlayers()],
+    players: playersDb ? playersDb.all() : [],
   });
 
+  const buildDeck = (fractions) => {
+    const cards = getFractions(fractions);
+    const deck = Deck(cards);
+    deck.shuffle();
+    return deck;
+  };
+
   const start = async (players) => {
-    await setPlayers({ players });
+    await playersDb.init(players);
 
     const gameResponse = await getGame();
     game = gameResponse.data;
@@ -31,13 +64,16 @@ const Game = (data) => {
     basesDeck = Deck(availableBases);
     basesDeck.shuffle();
 
+    const playersCount = await playersDb.count();
     bases = basesDeck
-      .getCards(players.length + 1)
+      .getCards(playersCount + 1)
       .map((card) => ({
         ...card,
         minions: [],
         captured: false,
       }));
+
+    players.forEach(player => player.start());
 
     return load();
   };
@@ -63,6 +99,7 @@ const Game = (data) => {
   
   return {
     settings,
+    buildDeck,
     start,
     load,
     checkBases,

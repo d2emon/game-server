@@ -20,9 +20,7 @@ import {
   selectPlayer,
   selectPlayerId,
   startTurn,
-  updateGame,
 } from '../../reducers/gameSlice';
-import gameAPI from '../../services/gameAPI';
   
 function Game() {
   const dispatch = useDispatch();
@@ -80,28 +78,20 @@ function Game() {
   
   const handlePlayMinion = useCallback(
     (base) => () => {
-      console.log('HANSLE PLAY MINION');
+      console.log('HANDLE PLAY MINION');
       if (!player) {
         return;
       }
-  
-      const current = gameAPI.playCard(playerId, {
-        card: selectedMinion,
-        target: base,
-      });
-      console.log(current);
-  
-      dispatch(updateGame({
-        players: current.players,
-        isPlayerActive,
-      }));
 
+      const card = selectedMinion;
+      dispatch(playCard({
+        cardId: card.id,
+        target: base,
+      }));
       setSelectedMinion(null);
     },
     [
       dispatch,
-      isPlayerActive,
-      playerId,
       player,
       selectedMinion,
     ],

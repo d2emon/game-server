@@ -8,6 +8,8 @@ import Player from './models/player';
 const gameModel = Game({
   getGame: gameAPI.getGame,
   getBases: gameAPI.getBases,
+  getFractions: gameAPI.getFractions,
+
   getPlayers: playerAPI.getPlayers,
   setPlayers: playerAPI.setPlayers,
 });

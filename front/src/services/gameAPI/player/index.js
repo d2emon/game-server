@@ -1,11 +1,9 @@
-import {
-  getPlayer,
-  getPlayers,
-  setPlayers,
-} from './models/player';
+import Database from '../helpers/database';
+
+const database = Database();
 
 const playerAction = (playerId, callback) => {
-  const player = getPlayer(playerId);
+  const player = database.byId(playerId);
   return callback(player);
 };
 
@@ -16,11 +14,7 @@ export const createPlayerAPI = {
   ),
   playCardById: (playerId, data) => playerAction(
     playerId,
-    player => player.playCardById(data),
-  ),
-  playCard: (playerId, data) => playerAction(
-    playerId,
-    player => player.playCard(data),
+    player => player.playCardById(data.cardId),
   ),
   endTurn: (playerId) => playerAction(
     playerId,
@@ -29,13 +23,13 @@ export const createPlayerAPI = {
 };
 
 const playerAPI = {
-  getPlayers,
+  getPlayers: () => database.all(),
   setPlayers: (data) => {
     const {
       players,
     } = data;
 
-    return setPlayers(players);
+    return database.fill(players);
   },
 };
 

@@ -70,13 +70,6 @@ export const playCard = createAsyncThunk(
 export const gameSlice = createSlice({
   name: 'game',
   initialState,
-  reducers: {
-    updateGame: (state, action) => ({
-      ...state,
-      players: action.payload.players,
-      isPlayerActive: action.payload.isPlayerActive,
-    }),
-  },
   extraReducers: (builder) => {
     builder
       .addCase(startGame.pending, (state) => ({
@@ -125,8 +118,6 @@ export const gameSlice = createSlice({
       }))
   },
 });
-
-export const { updateGame } = gameSlice.actions;
 
 // Selectors
 
