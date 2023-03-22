@@ -3,6 +3,8 @@ import {
   Button,
   Modal,
 } from 'react-bootstrap';
+import { useDispatch } from 'react-redux';
+import { playCard } from '../../reducers/gameSlice';
 
 const cardActionPanels = {
   discardTarget: (payload) => {
@@ -90,9 +92,12 @@ function CardActionModal (props) {
   const {
     show,
     title,
+    card,
     actions,
     onPlay,
   } = props;
+
+  const dispatch = useDispatch();
 
   const [actionId, setActionId] = useState(null);
   const currentAction = useMemo(
@@ -125,6 +130,24 @@ function CardActionModal (props) {
     ],
   );
 
+  const handleSubmitAction = useCallback(
+    () => {
+      if (!card) {
+        return;
+      }
+
+      dispatch(playCard({
+        cardId: card.id,
+      }));
+      onPlay();
+    },
+    [
+      dispatch,
+      card,
+      onPlay,
+    ],
+  );
+
   useEffect(
     () => {
       setActionId((actions && actions.length > 0) ? 0 : null);
@@ -154,7 +177,7 @@ function CardActionModal (props) {
           <Modal.Footer>
             <Button
               variant="success"
-              onClick={onPlay}
+              onClick={handleSubmitAction}
             >
               Готово
             </Button>

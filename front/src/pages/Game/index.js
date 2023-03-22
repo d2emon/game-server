@@ -30,7 +30,6 @@ function Game() {
   const [selectedMinion, setSelectedMinion] = useState(null);
   const [selectedCard, setSelectedCard] = useState(null);
   const [cardTarget, setCardTarget] = useState(null);
-  const [cardActions, setCardActions] = useState(null);
   const [showCardActionModal, setShowCardActionModal] = useState(false);
 
   const playerId = useSelector(selectPlayerId);
@@ -60,6 +59,28 @@ function Game() {
       selectedCard,
     ],
   );
+
+  const cardActions = useMemo(
+    () => {
+      if (!selectedCard) {
+        return null;
+      }
+
+      if (!selectedCard.onPlay) {
+        return [];
+      }
+
+      if (selectedCard.onPlay.target && !cardTarget) {
+        return null;
+      }
+
+      return selectedCard.onPlay.actions || [];
+    },
+    [
+      selectedCard,
+      cardTarget,
+    ],
+  );
   
   const handleStartTurn = useCallback(
     () => dispatch(startTurn()),
@@ -69,29 +90,6 @@ function Game() {
   const handleEndTurn = useCallback(
     () => dispatch(endTurn()),
     [dispatch],
-  );
-
-  const handlePlayCard = useCallback(
-    (card) => {
-      if (!card.onPlay) {
-        return;
-      }
-
-      const actions = card.onPlay.actions || [];
-      actions.forEach((payload) => {
-        const {
-          action,
-        } = payload;
-  
-        const handler = null; // cardActions[action];
-        if (handler) {
-          handler(payload);
-        } else {
-          console.log('!!!UNKNOWN:', action, payload);
-        }
-      });
-    },
-    [],
   );
   
   const handlePlayAction = useCallback(
@@ -137,45 +135,25 @@ function Game() {
   const handleNextAction = useCallback(
     () => {
       console.log('NEXT ACTION');
+      /*
       dispatch(playCard({
         cardId: selectedCard.id,
       }));
-      setCardActions(null);
+      */
       setShowCardActionModal(false);
     },
     [
-      dispatch,
-      selectedCard,
-      setCardActions,
-    ],
-  );
-
-  const handleCloseCardActionModal = useCallback(
-    () => {
-      setShowCardActionModal(false);
-    },
-    [
+      // dispatch,
+      // selectedCard,
       setShowCardActionModal,
     ],
   );
 
   useEffect(
     () => {
-      if (!selectedCard) {
-        return;
-      }
-
-      if (needTarget && !cardTarget) {
+      if (selectedCard && needTarget && !cardTarget) {
         console.log('TARGET???');
         setCardTarget({});
-        return;
-      }
-
-      console.log('Card:', selectedCard);
-      console.log('Target:', cardTarget);
-
-      if (selectedCard.onPlay) {
-        setCardActions(selectedCard.onPlay.actions || []);
       }
     },
     [
@@ -184,7 +162,6 @@ function Game() {
       needTarget,
       cardTarget,
       setCardTarget,
-      setCardActions,
     ]
   );
 
@@ -194,15 +171,16 @@ function Game() {
         return;
       }
 
+      console.log('Card:', selectedCard);
+      console.log('Target:', cardTarget);
+
       setShowCardActionModal(true);
-      handlePlayCard(selectedCard);
     },
     [
       selectedCard,
       cardTarget,
       cardActions,
       setShowCardActionModal,
-      handlePlayCard,
     ],
   )
 
@@ -211,9 +189,9 @@ function Game() {
       <CardActionModal
         show={showCardActionModal}
         title={selectedCard ? selectedCard.title : ''}
+        card={selectedCard}
         actions={cardActions}
         onPlay={handleNextAction}
-        onClose={handleCloseCardActionModal}
       />
       <Container>
         <Row>
